@@ -1,7 +1,7 @@
 const csvtojson = require("csvtojson");
 const xlsx = require("xlsx");
 const readXlsxFile = require("read-excel-file/node");
-const {default: axios} = require("axios");
+const { default: axios } = require("axios");
 const multer = require("multer");
 
 const storage = multer.diskStorage({
@@ -13,15 +13,15 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({storage: storage});
+const upload = multer({ storage: storage });
 
 exports.handleFileUpload = async (req, res) => {
   try {
     // Call upload.single to save the file to disk
-    upload.single("uploadfile")(req, res, async (err) => {
+    upload.single("uploadFile")(req, res, async (err) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({message: "Internal Server Error"});
+        return res.status(500).json({ message: "Internal Server Error" });
       }
 
       // Read the uploaded file using xlsx library
@@ -37,7 +37,7 @@ exports.handleFileUpload = async (req, res) => {
       if (!sheetJSON) {
         return res
           .status(400)
-          .json({message: "Failed to convert file to JSON", data: sheetJSON});
+          .json({ message: "Failed to convert file to JSON", data: sheetJSON });
       }
 
       // Respond with the converted JSON data
@@ -49,6 +49,6 @@ exports.handleFileUpload = async (req, res) => {
   } catch (err) {
     // Handle any errors that might occur during file upload, file reading or JSON conversion
     console.error(err);
-    return res.status(500).json({message: "Internal Server Error"});
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
