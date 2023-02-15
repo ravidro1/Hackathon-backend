@@ -46,15 +46,14 @@ exports.handleFileUpload = async (req, res) => {
         });
       });
 
-      const filterJSON = sheetJSON.map((row) => {
+      let filterJSON = sheetJSON.map((row) => {
         const tempRow = {};
 
         Object.keys(row).forEach((key) => {
           if (!tempKeys.includes(key)) {
-          } else if (row[key].length > 0) {
+          } else if (row[key].toString().length < 1) {
             tempRow[key] = "";
           } else {
-            // return
             tempRow[key] = row[key];
           }
         });
@@ -65,10 +64,23 @@ exports.handleFileUpload = async (req, res) => {
           }
         });
 
-        return tempRow;
+        let isAllRowEmpty = "";
+
+        Object.values(tempRow).map((value) => {
+          isAllRowEmpty += value;
+        });
+
+        if (isAllRowEmpty.length > 0) {
+          return tempRow;
+        }
       });
 
-      console.log(filterJSON);
+      // console.log(sheetJSON);
+      // console.log(filterJSON);
+
+      filterJSON = filterJSON.filter(
+        (item) => item != undefined && item != null
+      );
 
       fs.unlinkSync(filePath);
 
@@ -132,12 +144,22 @@ exports.uploadTableToDataBase = (req, res) => {
 };
 
 exports.getAllTable = (req, res) => {
-  Excel.findById(req.body.id)
-    .then((excel) => {
-      if (!excel) {
-        res.status(400).json({message: "excel Not Found"});
+  User.findById(req.body.user_id)
+    .then((user) => {
+      if (!user) {
+        res.status(400).json({message: "User Not Found"});
       } else {
-        res.status(200).json({message: "excel Found", excelTable: excel});
+        user
+          .populate("excel_Array")
+          .then((populatedUser) => {
+            res.status(200).json({
+              message: "Excels List",
+              allTables: populatedUser.excel_Array,
+            });
+          })
+          .catch((err) => {
+            res.status(500).json({message: "Error", err});
+          });
       }
     })
     .catch((err) => {
