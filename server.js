@@ -29,9 +29,11 @@ app.post(
   "/LoginVerifyAndCheckIfUserAlreadyLogged",
   UserController.loginVerifyAndCheckIfUserAlreadyLogged
 );
+// app.post("/GetUser", UserController.getUser);
 // app.post("/Logout", UserController.logout);
 
 // app.post("/UploadFile", ExeclFunctions.UploadFile);
 app.post("/HandleFileUpload", ExeclFunctions.handleFileUpload);
+app.post("/UploadTableToDataBase", ExeclFunctions.uploadTableToDataBase);
 
 app.listen(8000, () => console.log("listen on port 8000"));
