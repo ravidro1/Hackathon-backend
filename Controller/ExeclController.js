@@ -82,7 +82,7 @@ exports.uploadTableToDataBase = (req, res) => {
             });
             res
               .status(200)
-              .json({message: "Upload Execl Success!!!", execlTable: execl});
+              .json({message: "Upload Execl Success!!!", execlTable: tableData,execlDataType:execl.execl_dataTypes});
           }
         })
         .catch((err) => {
