@@ -17,6 +17,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage: storage});
 
+
+
+
 exports.handleFileUpload = async (req, res) => {
   try {
     // Call upload.single to save the file to disk
@@ -77,7 +80,9 @@ exports.uploadTableToDataBase = (req, res) => {
             user.save().catch((err) => {
               res.status(400).json({message: "Upload Execl To User Faild!!!"});
             });
-            res.status(200).json({message: "Upload Execl Success!!!"});
+            res
+              .status(200)
+              .json({message: "Upload Execl Success!!!", execlTable: execl});
           }
         })
         .catch((err) => {
@@ -85,4 +90,62 @@ exports.uploadTableToDataBase = (req, res) => {
         });
     }
   });
+};
+
+exports.getAllTable = (req, res) => {
+  Execl.findById(req.body.id)
+    .then((execl) => {
+      if (!execl) {
+        res.status(400).json({message: "Execl Not Found"});
+      } else {
+        res.status(200).json({message: "Execl Found", execlTable: execl});
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({message: "Error", err});
+    });
+};
+
+exports.addRowToTable = (req, res) => {
+  Execl.findByIdAndUpdate(req.body.id)
+    .then((execl) => {
+      if (!execl) {
+        res.status(400).json({message: "Execl Not Found"});
+      } else {
+        execl.execl_structure.push(req.body.newRow);
+        execl.save().catch((err) => {
+          res.status(500).json({message: "Error", err});
+        });
+
+        res.status(200).json({message: "Execl Found", execlTable: execl});
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({message: "Error", err});
+    });
+};
+
+exports.deleteTable = (req, res) => {
+  Execl.findByIdAndDelete(req.body.execl_id)
+    .then((execl) => {
+      if (!execl) {
+        res.status(400).json({message: "Execl Not Found"});
+      } else {
+        User.findById(req.body.user_id)
+          .then((user) => {
+            if (!user) {
+              res.status(400).json({message: "User Not Found"});
+            } else {
+              res.status(200).json({message: "Execl Delete From User"});
+            }
+          })
+          .catch((err) => {
+            res.status(500).json({message: "Error", err});
+          });
+        res.status(200).json({message: "Success: Execl Delete"});
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({message: "Error", err});
+    });
 };
