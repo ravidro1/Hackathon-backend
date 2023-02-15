@@ -56,7 +56,7 @@ exports.handleFileUpload = async (req, res) => {
 };
 
 exports.uploadTableToDataBase = (req, res) => {
-  const {user_id, name, dataType, tableData} = req.body;
+  const { user_id, name, dataType, tableData } = req.body;
 
   const newExecl = new Execl({
     name: name,
@@ -66,22 +66,22 @@ exports.uploadTableToDataBase = (req, res) => {
 
   newExecl.save().then((execl) => {
     if (!execl) {
-      res.status(400).json({message: "Upload Execl Faild!!!"});
+      res.status(400).json({ message: "Upload Execl Faild!!!" });
     } else {
       User.findById(user_id)
         .then((user) => {
           if (!user) {
-            res.status(400).json({message: "User Not Found"});
+            res.status(400).json({ message: "User Not Found" });
           } else {
             user.Execl_Array.push(execl);
             user.save().catch((err) => {
-              res.status(400).json({message: "Upload Execl To User Faild!!!"});
+              res.status(400).json({ message: "Upload Execl To User Faild!!!" });
             });
-            res.status(200).json({message: "Upload Execl Success!!!"});
+            res.status(200).json({ message: "Upload Execl Success!!!", excelTable: tableData });
           }
         })
         .catch((err) => {
-          res.status(500).json({message: "Error", err});
+          res.status(500).json({ message: "Error", err });
         });
     }
   });
