@@ -5,6 +5,7 @@ const {default: axios} = require("axios");
 const multer = require("multer");
 const Execl = require("../Models/Execl");
 const User = require("../Models/User");
+const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -17,9 +18,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage: storage});
 
-
-
-
 exports.handleFileUpload = async (req, res) => {
   try {
     // Call upload.single to save the file to disk
@@ -30,13 +28,16 @@ exports.handleFileUpload = async (req, res) => {
       }
 
       // Read the uploaded file using xlsx library
-      const xlFile = xlsx.readFile(`public/${req.file.filename}`);
-
+      const filePath = `public/${req.file.filename}`;
+      const xlFile = xlsx.readFile(filePath);
+      xlsx.readFile(`public/${req.file.filename}`);
       // Extract the first sheet from the Excel file
       const sheet = xlFile.Sheets[xlFile.SheetNames[0]];
-
+      console.log(sheet);
       // Convert the sheet data to JSON format
       const sheetJSON = xlsx.utils.sheet_to_json(sheet);
+
+      fs.unlinkSync(filePath);
 
       // If sheetJSON is empty or undefined, respond with an error message
       if (!sheetJSON) {
@@ -80,9 +81,12 @@ exports.uploadTableToDataBase = (req, res) => {
             user.save().catch((err) => {
               res.status(400).json({message: "Upload Execl To User Faild!!!"});
             });
-            res
-              .status(200)
-              .json({message: "Upload Execl Success!!!", execlTable: tableData,execlDataType:execl.execl_dataTypes});
+            res.status(200).json({
+              message: "Upload Execl Success!!!",
+              execlName: execl.name,
+              execlTable: tableData,
+              execlDataType: execl.execl_dataTypes,
+            });
           }
         })
         .catch((err) => {
