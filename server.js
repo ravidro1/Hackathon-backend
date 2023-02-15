@@ -4,6 +4,8 @@ const cors = require("cors")
 const app = express()
 const mysql = require('mysql');
 const multer = require('multer')
+const csvtojson = require('csvtojson')
+const xlsx = require('xlsx')
 const readXlsxFile = require('read-excel-file/node');
 const { default: axios } = require('axios');
 require('dotenv').config()
@@ -77,51 +79,87 @@ function importExcelData2MySQL(filePath) {
     })
 }
 
+function checkType() {
+
+}
 
 app.post('/uploadfile', upload.single("uploadfile"), async (req, res) => {
+
+    let xlFile = xlsx.readFile("public/" + req.file.filename)
+
+    let sheet = xlFile.Sheets[xlFile.SheetNames[0]]
+
+    let P_JSON = xlsx.utils.sheet_to_json(sheet)
+    console.log(P_JSON);
+    // await empSchema.insertMany(P_JSON).then(result=>{
+    //     if (result.length>0) {
+    //         res.status(200).send({msg:"succss",Count:result.length})
+    //     } else {
+    //         res.send({msg:"no data"})
+    //     }
+    // })
+
     // console.log(req.file);
     // const data = await importExcelData2MySQL("public/" + req.file.filename);
     // console.log(data);
-    readXlsxFile("public/" + req.file.filename).then((rows) => {
-        // res.status(200).json({ rows })
-        // res.status(200).json({ msg: data })
-        // console.log(typeof (rows[1][6]));
-        // console.log(rows[1][11] instanceof Date);
-        const datatype = [];
-        const column = [];
+    // var arrayToInsert = [];
+    // csvtojson().fromFile("public/" + req.file.filename).then(source => {
+    //     // Fetching the all data from each row
+    //     console.log(source);
+    //     for (var i = 0; i < source.length; i++) {
+    //         console.log(source[i]["name"])
+    //         var singleRow = {
+    //             name: source[i]["name"],
+    //             email: source[i]["email"],
+    //             standard: source[i]["standard"],
+    //         };
+    //         arrayToInsert.push(singleRow);
+    //     }
+    //     //inserting into the table student
+    //     Student.insertMany(arrayToInsert, (err, result) => {
+    //         if (err) console.log(err);
+    //         if (result) {
+    //             console.log("File imported successfully.");
+    //             res.redirect('/')
+    //         }
+    //     });
+    // });
 
 
-        for (let i = 0; i < rows[1].length; i++) {
-            if (typeof (rows[1][i]) == String) {
-                datatype.push(rows[0][i].replace(/[ /]/g, "_") + " VARCHAR(255)")
-                column.push(rows[0][i].replace(/[ /]/g, "_"))
-            } else if (typeof (rows[1][i]) == Number) {
-                datatype.push(rows[0][i].replace(/[ /]/g, "_") + " INT")
-                column.push(rows[0][i].replace(/[ /]/g, "_"))
-            } else if (typeof (rows[1][i]) instanceof Date) {
-                datatype.push(rows[0][i].replace(/[ /]/g, "_") + " DATE")
-                column.push(rows[0][i].replace(/[ /]/g, "_"))
-            } else {
-                datatype.push(rows[0][i].replace(/[ /]/g, "_") + " VARCHAR(255)")
-                column.push(rows[0][i].replace(/[ /]/g, "_"))
-            }
-        }
-
-        // res.status(200).json({ rows })
-        // console.log(typeof(rows[0][1]));
-        const create = `create table test11(Id int  auto_increment primary key, ${datatype}) ENGINE=InnoDB DEFAULT CHARSET=hebrew`
-        const insert = `insert into test11 (${column}) values(?)`
-        db.query(create, (err, result) => {
-            if (err) console.log(err);
-            db.query(insert, [rows[1]], (err, rs) => {
-                if (err) console.log(err);
-                db.query("select * from test11", (r, s) => {
-                    res.status(200).send(s)
-                    console.log(rs);
-                })
-            })
-        })
-    })
+    // readXlsxFile("public/" + req.file.filename).then((rows) => {
+    //     const datatype = [];
+    //     const column = [];
+    //     for (let i = 1; i < data.length; i++) {
+    //         const element = data[i];
+    //     }
+    //     for (let i = 0; i < rows[1].length; i++) {
+    //         if (typeof (rows[1][i]) == String) {
+    //             datatype.push(rows[0][i].replace(/[ /]/g, "_") + " VARCHAR(255)")
+    //             column.push(rows[0][i].replace(/[ /]/g, "_"))
+    //         } else if (typeof (rows[1][i]) == Number) {
+    //             datatype.push(rows[0][i].replace(/[ /]/g, "_") + " INT")
+    //             column.push(rows[0][i].replace(/[ /]/g, "_"))
+    //         } else if (typeof (rows[1][i]) instanceof Date) {
+    //             datatype.push(rows[0][i].replace(/[ /]/g, "_") + " DATE")
+    //             column.push(rows[0][i].replace(/[ /]/g, "_"))
+    //         } else {
+    //             datatype.push(rows[0][i].replace(/[ /]/g, "_") + " VARCHAR(255)")
+    //             column.push(rows[0][i].replace(/[ /]/g, "_"))
+    //         }
+    //     }
+    //     const create = `create table test11(Id int  auto_increment primary key, ${datatype}) ENGINE=InnoDB DEFAULT CHARSET=hebrew`
+    //     const insert = `insert into test11 (${column}) values(?)`
+    //     db.query(create, (err, result) => {
+    //         if (err) console.log(err);
+    //         db.query(insert, [rows[1]], (err, rs) => {
+    //             if (err) console.log(err);
+    //             db.query("select * from test11", (r, s) => {
+    //                 res.status(200).send(s)
+    //                 console.log(rs);
+    //             })
+    //         })
+    //     })
+    // })
 });
 app.get("/a", (req, res) => {
 
