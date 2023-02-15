@@ -42,6 +42,7 @@ exports.login = (req, res) => {
                 message: "Login",
                 userID: user._id,
                 token: token,
+                userData: user,
               });
             }
           })
@@ -82,6 +83,20 @@ exports.loginVerifyAndCheckIfUserAlreadyLogged = (req, res) => {
       res.status(500).json({message: "Error", err, isLegalToken: false});
     });
 };
+
+// exports.getUser = (req, res) => {
+//   User.findById(req.body.id)
+//     .then((user) => {
+//       if (!user) {
+//         res.status(400).json({message: "User Dosnt Exist!!!"});
+//       } else {
+//         res.status(200).json({message: "User Found", userData: user});
+//       }
+//     })
+//     .catch((err) => {
+//       res.status(500).json({message: "Error", err});
+//     });
+// };
 
 // exports.logout = (req, res) => {
 //   User.findOneAndUpdate({_id: req.body.id}, {loggedIn: false})
