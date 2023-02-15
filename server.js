@@ -31,7 +31,7 @@ app.post(
 );
 // app.post("/Logout", UserController.logout);
 
-app.post("/UploadFile", ExeclFunctions.UploadFile);
+// app.post("/UploadFile", ExeclFunctions.UploadFile);
 app.post("/HandleFileUpload", ExeclFunctions.handleFileUpload);
 
 app.listen(8000, () => console.log("listen on port 8000"));
