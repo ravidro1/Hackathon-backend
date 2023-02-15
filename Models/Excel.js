@@ -1,19 +1,17 @@
 const mongoose = require("mongoose");
 
-const Execl = new mongoose.Schema({
+const Excel = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     // unique: true,
   },
 
-  execl_dataTypes: {
+  excel_dataTypes: {},
 
-  },
-
-  execl_structure: {
+  excel_structure: {
     type: [{}],
   },
 });
 
-module.exports = mongoose.model("Execl", Execl);
+module.exports = mongoose.model("Excel", Excel);
