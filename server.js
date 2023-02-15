@@ -20,7 +20,7 @@ mongoose
 app.use(cors());
 app.use(bodyParser.json());
 
-const ExeclFunctions = require("./Controller/ExeclController");
+const ExcelFunctions = require("./Controller/ExcelController");
 const UserController = require("./Controller/UserController");
 
 app.post("/SignUp", UserController.signup);
@@ -33,12 +33,12 @@ app.post(
 // app.post("/GetUser", UserController.getUser);
 // app.post("/Logout", UserController.logout);
 
-// app.post("/UploadFile", ExeclFunctions.UploadFile);
+// app.post("/UploadFile", excelFunctions.UploadFile);
 
-app.post("/HandleFileUpload", ExeclFunctions.handleFileUpload);
-app.post("/UploadTableToDataBase", ExeclFunctions.uploadTableToDataBase);
-app.post("/GetAllTable", ExeclFunctions.getAllTable);
-app.post("/AddRowToTable", ExeclFunctions.addRowToTable);
-app.post("/DeleteTable", ExeclFunctions.deleteTable);
+app.post("/HandleFileUpload", ExcelFunctions.handleFileUpload);
+app.post("/UploadTableToDataBase", ExcelFunctions.uploadTableToDataBase);
+app.post("/GetAllTable", ExcelFunctions.getAllTable);
+app.post("/AddRowToTable", ExcelFunctions.addRowToTable);
+app.post("/DeleteTable", ExcelFunctions.deleteTable);
 
 app.listen(8000, () => console.log("listen on port 8000"));

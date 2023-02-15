@@ -15,7 +15,7 @@ const User = new mongoose.Schema({
 
   email: {type: String, required: true, unique: true},
 
-  Execl_Array: [{type: mongoose.Types.ObjectId, ref: "Execl"}],
+  excel_Array: [{type: mongoose.Types.ObjectId, ref: "Excel"}],
 });
 
 module.exports = mongoose.model("User", User);
