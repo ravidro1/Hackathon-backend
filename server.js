@@ -40,5 +40,6 @@ app.post("/UploadTableToDataBase", ExcelFunctions.uploadTableToDataBase);
 app.post("/GetAllTable", ExcelFunctions.getAllTable);
 app.post("/AddRowToTable", ExcelFunctions.addRowToTable);
 app.post("/DeleteTable", ExcelFunctions.deleteTable);
+app.post("/EditExcel", ExcelFunctions.editExcel);
 
 app.listen(8000, () => console.log("listen on port 8000"));
