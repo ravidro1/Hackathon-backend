@@ -1,7 +1,7 @@
 const csvtojson = require("csvtojson");
 const xlsx = require("xlsx");
 const readXlsxFile = require("read-excel-file/node");
-const {default: axios} = require("axios");
+const { default: axios } = require("axios");
 const multer = require("multer");
 const Excel = require("../Models/Excel");
 const User = require("../Models/User");
@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({storage: storage});
+const upload = multer({ storage: storage });
 
 exports.handleFileUpload = async (req, res) => {
   try {
@@ -24,7 +24,7 @@ exports.handleFileUpload = async (req, res) => {
     upload.single("uploadFile")(req, res, async (err) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({message: "Internal Server Error"});
+        return res.status(500).json({ message: "Internal Server Error" });
       }
 
       // Read the uploaded file using xlsx library
@@ -88,7 +88,7 @@ exports.handleFileUpload = async (req, res) => {
       if (!sheetJSON) {
         return res
           .status(400)
-          .json({message: "Failed to convert file to JSON", data: sheetJSON});
+          .json({ message: "Failed to convert file to JSON", data: sheetJSON });
       }
 
       // Respond with the converted JSON data
@@ -101,12 +101,12 @@ exports.handleFileUpload = async (req, res) => {
   } catch (err) {
     // Handle any errors that might occur during file upload, file reading or JSON conversion
     console.error(err);
-    return res.status(500).json({message: "Internal Server Error"});
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 exports.uploadTableToDataBase = (req, res) => {
-  const {user_id, name, dataType, tableData} = req.body;
+  const { user_id, name, dataType, tableData } = req.body;
 
   const newExcel = new Excel({
     name: name,
@@ -116,16 +116,16 @@ exports.uploadTableToDataBase = (req, res) => {
 
   newExcel.save().then((excel) => {
     if (!excel) {
-      res.status(400).json({message: "Upload excel Faild!!!"});
+      res.status(400).json({ message: "Upload excel Faild!!!" });
     } else {
       User.findById(user_id)
         .then((user) => {
           if (!user) {
-            res.status(400).json({message: "User Not Found"});
+            res.status(400).json({ message: "User Not Found" });
           } else {
             user.excel_Array.push(excel);
             user.save().catch((err) => {
-              res.status(400).json({message: "Upload excel To User Faild!!!"});
+              res.status(400).json({ message: "Upload excel To User Faild!!!" });
             });
             console.log(tableData);
             res.status(200).json({
@@ -133,11 +133,12 @@ exports.uploadTableToDataBase = (req, res) => {
               excelName: excel.name,
               excelTable: tableData,
               excelDataType: excel.excel_dataTypes,
+              excel: excel
             });
           }
         })
         .catch((err) => {
-          res.status(500).json({message: "Error", err});
+          res.status(500).json({ message: "Error", err });
         });
     }
   });
@@ -146,8 +147,9 @@ exports.uploadTableToDataBase = (req, res) => {
 exports.getAllTable = (req, res) => {
   User.findById(req.body.user_id)
     .then((user) => {
+      console.log(user);
       if (!user) {
-        res.status(400).json({message: "User Not Found"});
+        res.status(400).json({ message: "User Not Found" });
       } else {
         user
           .populate("excel_Array")
@@ -158,12 +160,12 @@ exports.getAllTable = (req, res) => {
             });
           })
           .catch((err) => {
-            res.status(500).json({message: "Error", err});
+            res.status(500).json({ message: "Error", err });
           });
       }
     })
     .catch((err) => {
-      res.status(500).json({message: "Error", err});
+      res.status(500).json({ message: "Error", err });
     });
 };
 
@@ -171,18 +173,18 @@ exports.addRowToTable = (req, res) => {
   Excel.findByIdAndUpdate(req.body.id)
     .then((excel) => {
       if (!excel) {
-        res.status(400).json({message: "excel Not Found"});
+        res.status(400).json({ message: "excel Not Found" });
       } else {
         excel.excel_structure.push(req.body.newRow);
         excel.save().catch((err) => {
-          res.status(500).json({message: "Error", err});
+          res.status(500).json({ message: "Error", err });
         });
 
-        res.status(200).json({message: "excel Found", excelTable: excel});
+        res.status(200).json({ message: "excel Found", excelTable: excel });
       }
     })
     .catch((err) => {
-      res.status(500).json({message: "Error", err});
+      res.status(500).json({ message: "Error", err });
     });
 };
 
@@ -190,23 +192,43 @@ exports.deleteTable = (req, res) => {
   Excel.findByIdAndDelete(req.body.excel_id)
     .then((excel) => {
       if (!excel) {
-        res.status(400).json({message: "excel Not Found"});
+        res.status(400).json({ message: "excel Not Found" });
       } else {
         User.findById(req.body.user_id)
           .then((user) => {
             if (!user) {
-              res.status(400).json({message: "User Not Found"});
+              res.status(400).json({ message: "User Not Found" });
             } else {
-              res.status(200).json({message: "excel Delete From User"});
+              res.status(200).json({ message: "excel Delete From User" });
             }
           })
           .catch((err) => {
-            res.status(500).json({message: "Error", err});
+            res.status(500).json({ message: "Error", err });
           });
-        res.status(200).json({message: "Success: excel Delete"});
+        // res.status(200).json({ message: "Success: excel Delete" });
       }
     })
     .catch((err) => {
-      res.status(500).json({message: "Error", err});
+      res.status(500).json({ message: "Error", err });
     });
 };
+exports.editExcel = (req, res) => {
+  const { editValues, excel_id, inputValue } = req.body
+  Excel.findOne({ _id: excel_id })
+    .then(xl => {
+      console.log(excel_id);
+      // console.log(xl);
+      // console.log(inputValue);
+      // console.log(xl.excel_structure[editValues.row]);
+      // console.log(xl.excel_structure[editValues.row][editValues.key]);
+      xl.excel_structure[editValues.row][editValues.key] = inputValue
+      xl.markModified("excel_structure")
+      xl.save()
+        .then(excl => {
+          console.log(excl);
+          res.status(200).json({ excel: excl })
+        })
+        .catch(err => res.status(400).json({ msg: "wrong" }))
+    })
+    .catch(err => res.status(400).json({ message: "wrong again" }))
+}
